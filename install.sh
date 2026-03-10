@@ -9,20 +9,36 @@ echo "Platform: $PLATFORM"
 
 # 1. Platform setup (Linux only)
 if [[ "$PLATFORM" == "linux" ]]; then
-    if ! command -v zsh &>/dev/null; then
-        echo "Installing zsh..."
-        sudo apt-get update && sudo apt-get install -y zsh
-    fi
-    if [[ "$SHELL" != */zsh ]]; then
-        echo "Setting default shell to zsh..."
-        chsh -s "$(which zsh)"
-    fi
-    for tool in nvim tmux fzf; do
+    NEED_APT=false
+    for tool in zsh tmux fzf; do
         if ! command -v "$tool" &>/dev/null; then
-            echo "Installing $tool..."
-            sudo apt-get install -y "$tool" 2>/dev/null || echo "Could not install $tool, install manually"
+            NEED_APT=true
+            break
         fi
     done
+    if [[ "$NEED_APT" == "true" ]]; then
+        sudo apt-get update
+        for tool in zsh tmux fzf; do
+            if ! command -v "$tool" &>/dev/null; then
+                echo "Installing $tool..."
+                sudo apt-get install -y "$tool"
+            fi
+        done
+    fi
+
+    # Install nvim via appimage if missing (Ubuntu apt version is too old)
+    if ! command -v nvim &>/dev/null; then
+        echo "Installing nvim..."
+        curl -fLo /tmp/nvim-linux-x86_64.appimage https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+        chmod +x /tmp/nvim-linux-x86_64.appimage
+        sudo mv /tmp/nvim-linux-x86_64.appimage /usr/local/bin/nvim
+    fi
+
+    # Set default shell to zsh (sudo to avoid password prompt)
+    if [[ "$SHELL" != */zsh ]]; then
+        echo "Setting default shell to zsh..."
+        sudo usermod -s "$(which zsh)" "$(whoami)"
+    fi
 fi
 
 # 2. Set platform-specific git include

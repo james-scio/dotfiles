@@ -13,21 +13,14 @@ fi
 
 WORKSPACE="$1"
 DOTFILES="$HOME/.dotfiles"
+SSH_HOST="coder.$WORKSPACE"
 
-echo "Copying dotfiles to $WORKSPACE:~/.dotfiles/ ..."
-coder ssh "$WORKSPACE" -- rm -rf '~/.dotfiles'
-coder ssh "$WORKSPACE" -- mkdir -p '~/.dotfiles'
+echo "Syncing dotfiles to $SSH_HOST:~/.dotfiles/ ..."
+rsync -av --delete --exclude='.git' --exclude='gitconfig-local' \
+    "$DOTFILES/" "$SSH_HOST:~/.dotfiles/"
 
-# Use tar to preserve directory structure and avoid multiple round trips
-tar -C "$DOTFILES" -cf - \
-    --exclude='.git' \
-    --exclude='gitconfig-local' \
-    . \
-    | coder ssh "$WORKSPACE" -- tar -C '~/.dotfiles' -xf -
-
-echo "Running install.sh on $WORKSPACE ..."
-coder ssh "$WORKSPACE" -- chmod +x '~/.dotfiles/install.sh'
-coder ssh "$WORKSPACE" -- '~/.dotfiles/install.sh'
+echo "Running install.sh on $SSH_HOST ..."
+ssh "$SSH_HOST" '~/.dotfiles/install.sh'
 
 echo ""
 echo "Done! Run: coder ssh $WORKSPACE"
