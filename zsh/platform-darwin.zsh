@@ -7,7 +7,6 @@ path+=('/Users/james/.local/bin')
 path+=('/Users/james/workspace/go/bin')
 path+=('/Users/james/go/bin')
 path=('/opt/homebrew/bin' $path)
-fpath+=('/Users/james/.zfunc')
 
 # GNU getopt for devdock
 path=('/opt/homebrew/opt/gnu-getopt/bin' $path)

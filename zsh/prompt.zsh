@@ -1,3 +1,6 @@
+# Bundled zfunc (async, prompt_james)
+fpath=("$DOTFILES/zsh/zfunc" $fpath)
+
 # Async prompt
 autoload -Uz async && async
 async_init
