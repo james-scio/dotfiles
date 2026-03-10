@@ -64,6 +64,7 @@ link "$HOME/.gitconfig"            "$DOTFILES/git/gitconfig"
 link "$HOME/.config/git/ignore"    "$DOTFILES/git/ignore"
 link "$HOME/.config/nvim"          "$DOTFILES/nvim"
 link "$HOME/.claude/settings.json" "$DOTFILES/claude/settings.json"
+link "$HOME/.inputrc"              "$DOTFILES/readline/inputrc"
 
 echo ""
 echo "Done! Platform: $PLATFORM"
