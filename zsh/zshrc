@@ -1,0 +1,11 @@
+DOTFILES="$HOME/.dotfiles"
+
+for f in aliases history keybindings prompt functions; do
+    source "$DOTFILES/zsh/$f.zsh"
+done
+
+source "$DOTFILES/zsh/platform-$(uname -s | tr '[:upper:]' '[:lower:]').zsh" 2>/dev/null
+
+# Completion (must be after all fpath modifications)
+autoload -U compinit && compinit
+zmodload -i zsh/complist

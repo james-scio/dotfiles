@@ -1,0 +1,51 @@
+[user]
+	name = James Simonsen
+	email = james@glean.com
+[diff]
+	algorithm = histogram
+[difftool]
+	prompt = false
+[merge]
+	renamelimit = 2000
+[mergetool]
+	keepBackup = false
+[alias]
+	lg = log --graph --full-history --simplify-by-decoration --branches --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"
+	append = town append
+	contribute = town contribute
+	diff-parent = town diff-parent
+	hack = town hack
+	kill = town kill
+	observe = town observe
+	park = town park
+	prepend = town prepend
+	propose = town propose
+	rename-branch = town rename-branch
+	repo = town repo
+	set-parent = town set-parent
+	ship = town ship
+	sync = town sync
+	fpush = push
+	bb = !better-git-branch.sh
+	pushf = push --force-with-lease
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[core]
+	editor = nvim
+[pull]
+	ff = only
+[push]
+	autoSetupRemote = true
+[rerere]
+	enabled = true
+	autoUpdate = true
+[branch]
+	sort = -committerdate
+[column]
+	ui = auto
+[rebase]
+	updateRefs = true
+[fetch]
+	prune = true
+[include]
+	path = ~/.dotfiles/git/gitconfig-local
