@@ -13,10 +13,11 @@ fi
 
 WORKSPACE="$1"
 DOTFILES="$HOME/.dotfiles"
-SSH_HOST="coder.$WORKSPACE"
+# Strip org prefix (e.g. "james/slack2" -> "slack2") for SSH host
+SSH_HOST="coder.${WORKSPACE##*/}"
 
 echo "Syncing dotfiles to $SSH_HOST:~/.dotfiles/ ..."
-rsync -av --delete --exclude='.git' --exclude='gitconfig-local' \
+rsync -av --delete --no-links --exclude='.git' --exclude='gitconfig-local' \
     "$DOTFILES/" "$SSH_HOST:~/.dotfiles/"
 
 echo "Running install.sh on $SSH_HOST ..."
