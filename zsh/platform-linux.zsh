@@ -9,8 +9,14 @@ export LS_COLORS='di=36:ln=35:so=31;1:pi=34;1:ex=34;1:bd=0:cd=0:su=37;1:sg=0:tw=
 alias ls='ls --color=auto'
 alias ll='ls -l --color=auto'
 
-# fzf (if installed)
+# fzf
 if command -v fzf &>/dev/null; then
     export FZF_CTRL_R_OPTS=$'--bind ctrl-/:toggle-wrap --wrap-sign "\t↳ "'
-    source <(fzf --zsh) 2>/dev/null || true
+    # fzf 0.48+ supports `fzf --zsh`, older versions ship separate files
+    if fzf --zsh &>/dev/null; then
+        source <(fzf --zsh)
+    else
+        [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+        [[ -f /usr/share/doc/fzf/examples/completion.zsh ]] && source /usr/share/doc/fzf/examples/completion.zsh
+    fi
 fi
