@@ -1,7 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "claude-sonnet-4-6",
-  "vim": true,
+  "model": "claude-opus-4-6",
   "hooks": {
     "Notification": [
       {
@@ -18,5 +17,6 @@
   "enabledPlugins": {
     "code-review@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
-  }
+  },
+  "vim": true
 }

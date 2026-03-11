@@ -10,7 +10,7 @@ echo "Platform: $PLATFORM"
 # 1. Platform setup (Linux only)
 if [[ "$PLATFORM" == "linux" ]]; then
     NEED_APT=false
-    for tool in zsh tmux fzf; do
+    for tool in zsh tmux; do
         if ! command -v "$tool" &>/dev/null; then
             NEED_APT=true
             break
@@ -18,12 +18,22 @@ if [[ "$PLATFORM" == "linux" ]]; then
     done
     if [[ "$NEED_APT" == "true" ]]; then
         sudo apt-get update
-        for tool in zsh tmux fzf; do
+        for tool in zsh tmux; do
             if ! command -v "$tool" &>/dev/null; then
                 echo "Installing $tool..."
                 sudo apt-get install -y "$tool"
             fi
         done
+    fi
+
+    # Install fzf from GitHub releases (apt version is too old)
+    if ! command -v fzf &>/dev/null || [[ "$(fzf --version | awk '{print $1}')" < "0.48" ]]; then
+        echo "Installing fzf..."
+        FZF_VERSION="$(curl -fsSL https://api.github.com/repos/junegunn/fzf/releases/latest | grep -Po '"tag_name": *"v?\K[^"]*')"
+        curl -fLo /tmp/fzf.tar.gz "https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-linux_amd64.tar.gz"
+        tar -xzf /tmp/fzf.tar.gz -C /tmp fzf
+        sudo mv /tmp/fzf /usr/local/bin/fzf
+        rm -f /tmp/fzf.tar.gz
     fi
 
     # Install nvim via appimage if missing (Ubuntu apt version is too old)
