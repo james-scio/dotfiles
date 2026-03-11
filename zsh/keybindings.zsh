@@ -1,3 +1,6 @@
+# Vi mode
+bindkey -v
+
 # Vi mode fixes
 bindkey "^?" backward-delete-char
 
