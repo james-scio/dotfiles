@@ -19,4 +19,7 @@ if command -v fzf &>/dev/null; then
         [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && source /usr/share/doc/fzf/examples/key-bindings.zsh
         [[ -f /usr/share/doc/fzf/examples/completion.zsh ]] && source /usr/share/doc/fzf/examples/completion.zsh
     fi
+    # Old fzf key-bindings.zsh binds to emacs keymap only; re-bind for vi mode
+    bindkey -M viins '^R' fzf-history-widget
+    bindkey -M viins '^T' fzf-file-widget
 fi
