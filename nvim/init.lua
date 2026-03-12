@@ -38,6 +38,12 @@ vim.filetype.add({
 require("darkplus")
 vim.cmd.colorscheme "darkplus"
 
+-- Transparent background so terminal/tmux dimming works
+vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
+vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
+vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
+
 -- require("ibhagwan/fzf-lua")
 vim.keymap.set('n', '<C-f>', '<cmd>FzfLua files<CR>', { noremap = true, silent = true })
 
