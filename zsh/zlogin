@@ -1,0 +1,2 @@
+# Re-apply PATH additions after .zshrc (Coder prebuilds append a hard PATH reset)
+path=("$HOME/bin" "$HOME/.local/bin" "$HOME/go/bin" $path)

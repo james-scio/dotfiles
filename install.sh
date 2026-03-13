@@ -75,6 +75,7 @@ link "$HOME/.config/git/ignore"    "$DOTFILES/git/ignore"
 link "$HOME/.config/nvim"          "$DOTFILES/nvim"
 link "$HOME/.claude/settings.json" "$DOTFILES/claude/settings.json"
 link "$HOME/.inputrc"              "$DOTFILES/readline/inputrc"
+link "$HOME/.zlogin"               "$DOTFILES/zsh/zlogin"
 link "$HOME/.profile"              "$DOTFILES/shell/profile"
 
 echo ""
