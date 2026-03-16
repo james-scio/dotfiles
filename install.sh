@@ -78,6 +78,13 @@ link "$HOME/.inputrc"              "$DOTFILES/readline/inputrc"
 link "$HOME/.zlogin"               "$DOTFILES/zsh/zlogin"
 link "$HOME/.profile"              "$DOTFILES/shell/profile"
 
+# 4. Install nvim plugins
+if command -v nvim &>/dev/null; then
+    echo "Installing nvim plugins..."
+    nvim --headless "+Lazy! install" +qa
+    echo "Nvim plugins installed."
+fi
+
 echo ""
 echo "Done! Platform: $PLATFORM"
 [[ "$PLATFORM" == "linux" ]] && echo "Restart your shell or run: exec zsh" || true
