@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export PATH="/opt/homebrew/bin:$PATH"
 
 # Pull Claude Code sessions from all running Coder workspaces into local ~/.claude/projects/
 # Remote project dirs like -home-workspace-foo get remapped to -Users-james-workspace-foo

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export PATH="/opt/homebrew/bin:$PATH"
 
 # Sync gcloud/GPG credentials to all running Coder workspaces,
 # but only if local gcloud creds have been refreshed since the last sync.
@@ -14,8 +15,7 @@ if [[ ! -f "$MARKER" ]]; then
     needs_sync=true
 else
     for f in "$GCLOUD_DIR"/application_default_credentials.json \
-             "$GCLOUD_DIR"/credentials.db \
-             "$GCLOUD_DIR"/access_tokens.db; do
+             "$GCLOUD_DIR"/credentials.db; do
         if [[ -f "$f" && "$f" -nt "$MARKER" ]]; then
             needs_sync=true
             break
