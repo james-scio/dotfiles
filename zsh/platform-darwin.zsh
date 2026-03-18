@@ -27,7 +27,7 @@ export CLOUDSDK_BQ_PYTHON=/Users/james/workspace/scio/python_scio/scio_env/bin/p
 # Scio python
 source $HOME/workspace/scio/python_scio/scio_env/bin/activate
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-alias scio=/Users/james/workspace/scio/tools/scio.sh
+alias scio=/Users/james/workspace/scio/scio
 
 # Clang
 export CPLUS_INCLUDE_PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
