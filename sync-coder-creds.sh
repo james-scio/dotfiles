@@ -2,53 +2,61 @@
 set -euo pipefail
 export PATH="/opt/homebrew/bin:$PATH"
 
-# Sync gcloud/GPG credentials to all running Coder workspaces,
-# but only if local gcloud creds have been refreshed since the last sync.
+# Sync gcloud/GPG credentials to all running Coder workspaces.
+# Tracks per-workspace sync state so paused VMs get synced when they come online.
 
-MARKER="$HOME/.cache/coder-creds-last-sync"
+CREDS_MARKER="$HOME/.cache/coder-creds-changed"
+SYNCED_DIR="$HOME/.cache/coder-creds-synced"
 GCLOUD_DIR="$HOME/.config/gcloud"
 SYNC_SCRIPT="$HOME/workspace/deploy/coder/coder-sync-creds.sh"
 
-# Check if any gcloud cred file is newer than the last sync marker
-needs_sync=false
-if [[ ! -f "$MARKER" ]]; then
-    needs_sync=true
-else
-    for f in "$GCLOUD_DIR"/application_default_credentials.json \
-             "$GCLOUD_DIR"/credentials.db; do
-        if [[ -f "$f" && "$f" -nt "$MARKER" ]]; then
-            needs_sync=true
+# Update the creds-changed marker if any cred file is newer than it
+for f in "$GCLOUD_DIR"/application_default_credentials.json \
+         "$GCLOUD_DIR"/credentials.db; do
+    if [[ -f "$f" ]]; then
+        if [[ ! -f "$CREDS_MARKER" || "$f" -nt "$CREDS_MARKER" ]]; then
+            mkdir -p "$(dirname "$CREDS_MARKER")"
+            touch "$CREDS_MARKER"
             break
         fi
-    done
-fi
+    fi
+done
 
-if [[ "$needs_sync" == "false" ]]; then
+# If creds have never been seen, nothing to sync
+if [[ ! -f "$CREDS_MARKER" ]]; then
     exit 0
 fi
-
-echo "$(date): gcloud creds refreshed, syncing to Coder workspaces..."
 
 workspaces=$(coder list -o json 2>/dev/null | jq -r '.[] | select(.latest_build.status == "running") | .name')
 
 if [[ -z "$workspaces" ]]; then
-    echo "No running Coder workspaces found."
     exit 0
 fi
 
-failed=false
+mkdir -p "$SYNCED_DIR"
+
+# Collect workspaces that haven't been synced since creds last changed
+needs_sync=()
 for ws in $workspaces; do
     name="${ws##*/}"
-    echo "Syncing creds to $name ..."
-    if "$SYNC_SCRIPT" "$name" --skip-gpg; then
-        echo "Done: $name"
-    else
-        echo "Failed: $name"
-        failed=true
+    marker="$SYNCED_DIR/$name"
+    if [[ ! -f "$marker" || "$CREDS_MARKER" -nt "$marker" ]]; then
+        needs_sync+=("$name")
     fi
 done
 
-if [[ "$failed" == "false" ]]; then
-    mkdir -p "$(dirname "$MARKER")"
-    touch "$MARKER"
+if [[ ${#needs_sync[@]} -eq 0 ]]; then
+    exit 0
 fi
+
+echo "$(date): syncing creds to Coder workspaces: ${needs_sync[*]}"
+
+for name in "${needs_sync[@]}"; do
+    echo "Syncing creds to $name ..."
+    if "$SYNC_SCRIPT" "$name" --skip-gpg; then
+        echo "Done: $name"
+        touch "$SYNCED_DIR/$name"
+    else
+        echo "Failed: $name"
+    fi
+done
