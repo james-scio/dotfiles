@@ -1,4 +1,4 @@
-alias grep='grep --color'
+export GREP_OPTIONS='--color=always'
 alias vi='nvim'
 alias vim='nvim'
 export EDITOR=nvim
