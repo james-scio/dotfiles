@@ -73,12 +73,28 @@ link "$HOME/.tmux.conf"            "$DOTFILES/tmux/tmux.conf"
 link "$HOME/.gitconfig"            "$DOTFILES/git/gitconfig"
 link "$HOME/.config/git/ignore"    "$DOTFILES/git/ignore"
 link "$HOME/.config/nvim"          "$DOTFILES/nvim"
-link "$HOME/.claude/settings.json" "$DOTFILES/claude/settings.json"
 link "$HOME/.inputrc"              "$DOTFILES/readline/inputrc"
 link "$HOME/.zlogin"               "$DOTFILES/zsh/zlogin"
 link "$HOME/.profile"              "$DOTFILES/shell/profile"
 
-# 4. Install nvim plugins
+# 4. Configure ~/.claude.json (Claude Code manages this file directly, so we merge rather than symlink)
+python3 - <<'EOF'
+import json, os
+path = os.path.expanduser("~/.claude.json")
+data = {}
+if os.path.exists(path):
+    with open(path) as f:
+        data = json.load(f)
+if data.get("editorMode") != "vim":
+    data["editorMode"] = "vim"
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"Set editorMode=vim in {path}")
+else:
+    print(f"editorMode already set to vim in {path}")
+EOF
+
+# 5. Install nvim plugins
 if command -v nvim &>/dev/null; then
     echo "Installing nvim plugins..."
     nvim --headless "+Lazy! install" +qa
