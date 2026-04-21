@@ -94,7 +94,26 @@ else:
     print(f"editorMode already set to vim in {path}")
 EOF
 
-# 5. Install nvim plugins
+# 5. Configure ~/.claude/settings.json (merge env vars, don't symlink — Claude manages this file)
+python3 - <<'EOF'
+import json, os
+path = os.path.expanduser("~/.claude/settings.json")
+os.makedirs(os.path.dirname(path), exist_ok=True)
+data = {}
+if os.path.exists(path):
+    with open(path) as f:
+        data = json.load(f)
+env = data.setdefault("env", {})
+if env.get("CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS") != "1":
+    env["CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"] = "1"
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"Set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 in {path}")
+else:
+    print(f"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS already set in {path}")
+EOF
+
+# 6. Install nvim plugins
 if command -v nvim &>/dev/null; then
     echo "Installing nvim plugins..."
     nvim --headless "+Lazy! install" +qa
