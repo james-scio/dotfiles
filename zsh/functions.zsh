@@ -37,3 +37,19 @@ alias jt='switch_java_test'
 preexec () {
     echo -n "\\x1b]133;A\\x1b\\"
 }
+
+# Set terminal window title
+function title() {
+    printf '\033]0;%s\007' "$*"
+}
+
+# Set terminal window title
+function _title_current() {
+    echo "${CODER_WORKSPACE_NAME:-${HOST%%.*}}"
+}
+
+# Set title to current hostname on each prompt
+function _title_precmd() {
+    title "$(_title_current)"
+}
+add-zsh-hook precmd _title_precmd
