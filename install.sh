@@ -74,6 +74,7 @@ link "$HOME/.gitconfig"            "$DOTFILES/git/gitconfig"
 link "$HOME/.config/git/ignore"    "$DOTFILES/git/ignore"
 link "$HOME/.config/nvim"          "$DOTFILES/nvim"
 link "$HOME/.inputrc"              "$DOTFILES/readline/inputrc"
+link "$HOME/.editrc"               "$DOTFILES/readline/editrc"
 link "$HOME/.zlogin"               "$DOTFILES/zsh/zlogin"
 link "$HOME/.profile"              "$DOTFILES/shell/profile"
 
