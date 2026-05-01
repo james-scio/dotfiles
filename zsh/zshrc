@@ -9,3 +9,17 @@ source "$DOTFILES/zsh/platform-$(uname -s | tr '[:upper:]' '[:lower:]').zsh" 2>/
 # Completion (must be after all fpath modifications)
 autoload -U compinit && compinit
 zmodload -i zsh/complist
+
+# mise: auto-trust scio repos and worktrees (added by precommit bootstrap)
+_scio_auto_trust() {
+  { [ -d .git ] || [ -f .git ]; } || return 0
+  local url
+  url="$(command git remote get-url origin 2>/dev/null)" || return 0
+  case "$url" in *askscio/scio*) command "$HOME/.local/bin/mise" trust 2>/dev/null ;; esac
+} 2>/dev/null
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd _scio_auto_trust
+_scio_auto_trust
+
+# Disable GitHub attestation verification — upstream flakiness (v2026.2.13)
+export MISE_GITHUB_ATTESTATIONS=0
