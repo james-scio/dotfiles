@@ -7,6 +7,7 @@ done
 source "$DOTFILES/zsh/platform-$(uname -s | tr '[:upper:]' '[:lower:]').zsh" 2>/dev/null
 
 # Completion (must be after all fpath modifications)
+zstyle ':completion:*' menu select
 autoload -U compinit && compinit
 zmodload -i zsh/complist
 
