@@ -1,5 +1,8 @@
 require("config.lazy")
 
+if os.getenv("SSH_TTY") then
+  vim.g.clipboard = 'osc52'
+end
 vim.opt.mouse = ""
 
 vim.g.did_indent_on = true   -- stops filetype indent plugins
