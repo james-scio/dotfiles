@@ -1,3 +1,9 @@
+[user]
+	name = James Simonsen
+	email = james@glean.com
+	signingkey = 9662AE7916EC3B3E
+[commit]
+	gpgsign = true
 [merge]
 	tool = meld
 [mergetool "meld"]

@@ -8,7 +8,12 @@ _launchd_notify_on_err() {
     if [[ ! -f "$_LAUNCHD_NOTIFY_MARKER" ]]; then
         mkdir -p "$(dirname "$_LAUNCHD_NOTIFY_MARKER")"
         touch "$_LAUNCHD_NOTIFY_MARKER"
-        osascript -e "display notification \"$_LAUNCHD_NOTIFY_NAME is failing\" with title \"Dotfiles\" sound name \"Basso\"" 2>/dev/null || true
+        local log="/tmp/$_LAUNCHD_NOTIFY_NAME.log"
+        local detail=""
+        if [[ -f "$log" ]]; then
+            detail=$(tail -1 "$log" | cut -c1-200)
+        fi
+        osascript -e "display notification \"${detail:-check log for details}\" with title \"$_LAUNCHD_NOTIFY_NAME\" subtitle \"failed\" sound name \"Basso\"" 2>/dev/null || true
     fi
 }
 
