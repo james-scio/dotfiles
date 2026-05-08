@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+exec > >(while IFS= read -r line; do printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$line"; done) 2>&1
 export PATH="/opt/homebrew/bin:$PATH"
 
 # Sync gcloud/GPG credentials to all running Coder workspaces.

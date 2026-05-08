@@ -24,3 +24,6 @@ _scio_auto_trust
 
 # Disable GitHub attestation verification — upstream flakiness (v2026.2.13)
 export MISE_GITHUB_ATTESTATIONS=0
+
+# mise: automatic dev tool version management
+eval "$(/Users/james/.local/bin/mise activate zsh)"
