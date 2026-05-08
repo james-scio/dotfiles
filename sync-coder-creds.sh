@@ -2,6 +2,7 @@
 set -euo pipefail
 exec > >(while IFS= read -r line; do printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$line"; done) 2>&1
 export PATH="/opt/homebrew/bin:$PATH"
+source "$(dirname "$0")/shell/launchd-notify.sh" && launchd_notify_trap
 
 # Sync gcloud/GPG credentials to all running Coder workspaces.
 # Tracks per-workspace sync state so paused VMs get synced when they come online.

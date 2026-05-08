@@ -2,6 +2,7 @@
 set -euo pipefail
 exec > >(while IFS= read -r line; do printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$line"; done) 2>&1
 export PATH="/opt/homebrew/bin:$PATH"
+source "$(dirname "$0")/shell/launchd-notify.sh" && launchd_notify_trap
 
 # Pull Claude Code sessions from all running Coder workspaces into local ~/.claude/projects/
 # Remote project dirs like -home-workspace-foo get remapped to -Users-james-workspace-foo
@@ -18,9 +19,10 @@ for ws in $workspaces; do
     ssh_host="coder.${ws##*/}"
     echo "Pulling sessions from $ssh_host ..."
 
-    for tool in .claude .erasmus; do
-        local_projects="$HOME/$tool/projects"
-        remote_dirs=$(ssh "$ssh_host" "ls ~/$tool/projects/ 2>/dev/null" 2>/dev/null | grep '^-') || true
+    for tool_path in .claude/projects .erasmus/features; do
+        tool="${tool_path%%/*}"
+        local_projects="$HOME/$tool_path"
+        remote_dirs=$(ssh "$ssh_host" "ls ~/$tool_path/ 2>/dev/null" 2>/dev/null) || true
         if [[ -z "$remote_dirs" ]]; then
             continue
         fi
@@ -29,7 +31,7 @@ for ws in $workspaces; do
             local_dir=$(echo "$remote_dir" | sed 's|^-home-[^-]*-workspace-|-Users-james-workspace-|; s|^-home-workspace-|-Users-james-workspace-|')
             mkdir -p "$local_projects/$local_dir"
             rsync -a --ignore-existing \
-                "$ssh_host:~/$tool/projects/$remote_dir/" \
+                "$ssh_host:~/$tool_path/$remote_dir/" \
                 "$local_projects/$local_dir/"
             echo "  [$tool] $remote_dir -> $local_dir"
         done
