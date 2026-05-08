@@ -114,7 +114,20 @@ else:
     print(f"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS already set in {path}")
 EOF
 
-# 6. Install nvim plugins
+# 6. Install launchd agents (macOS only)
+if [[ "$PLATFORM" == "darwin" ]]; then
+    for plist in "$DOTFILES"/launchd/*.plist; do
+        name="$(basename "$plist")"
+        dest="$HOME/Library/LaunchAgents/$name"
+        label="${name%.plist}"
+        launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
+        ln -sf "$plist" "$dest"
+        launchctl bootstrap "gui/$(id -u)" "$dest"
+        echo "Loaded launch agent $label"
+    done
+fi
+
+# 7. Install nvim plugins
 if command -v nvim &>/dev/null; then
     echo "Installing nvim plugins..."
     nvim --headless "+Lazy! install" +qa
