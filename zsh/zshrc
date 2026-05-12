@@ -1,4 +1,4 @@
-DOTFILES="${0:A:h:h}"
+DOTFILES="${${(%):-%N}:A:h:h}"
 
 for f in aliases history keybindings prompt functions; do
     source "$DOTFILES/zsh/$f.zsh"
