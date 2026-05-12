@@ -1,4 +1,4 @@
-DOTFILES="$HOME/.dotfiles"
+DOTFILES="${0:A:h:h}"
 
 for f in aliases history keybindings prompt functions; do
     source "$DOTFILES/zsh/$f.zsh"
@@ -26,4 +26,6 @@ _scio_auto_trust
 export MISE_GITHUB_ATTESTATIONS=0
 
 # mise: automatic dev tool version management
-eval "$(/Users/james/.local/bin/mise activate zsh)"
+if command -v mise &>/dev/null; then
+    eval "$(mise activate zsh)"
+fi

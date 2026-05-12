@@ -127,11 +127,14 @@ if [[ "$PLATFORM" == "darwin" ]]; then
     done
 fi
 
-# 7. Install nvim plugins
+# 7. Install nvim plugins (best-effort — may fail on fresh VMs before SSH keys are added)
 if command -v nvim &>/dev/null; then
     echo "Installing nvim plugins..."
-    nvim --headless "+Lazy! install" +qa
-    echo "Nvim plugins installed."
+    if nvim --headless "+Lazy! install" +qa 2>&1; then
+        echo "Nvim plugins installed."
+    else
+        echo "Nvim plugin install failed (run again after adding SSH key)."
+    fi
 fi
 
 echo ""
