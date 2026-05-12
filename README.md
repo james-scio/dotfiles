@@ -5,7 +5,7 @@ Cross-platform (macOS + Linux) dotfiles with one-command setup.
 ## Quick Setup
 
 ```bash
-git clone git@github.com:jamessimo/dotfiles.git ~/.dotfiles
+git clone git@github.com:james-scio/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 chmod +x install.sh
 ./install.sh
