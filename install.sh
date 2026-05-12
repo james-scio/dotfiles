@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES="$HOME/.dotfiles"
+DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 BACKUP="$HOME/.dotfiles-backup/$(date +%Y%m%d_%H%M%S)"
 PLATFORM="$(uname -s | tr '[:upper:]' '[:lower:]')"  # darwin or linux
 
