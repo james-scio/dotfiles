@@ -108,6 +108,7 @@ prompt_james_precmd() {
   setopt localoptions extendedglob noxtrace nowarncreateglobal
   local prompt_line_1
 
+  async_start_worker prompt_james_gcloud_worker -u 2>/dev/null
   async_job prompt_james_gcloud_worker prompt_james_gcloud_async $(pwd)
   prompt_james_resize
 }
