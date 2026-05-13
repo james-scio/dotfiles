@@ -17,6 +17,7 @@ vim.opt.softtabstop = 2
 
 -- Smart indenting for code
 vim.opt.smartindent = true
+vim.opt.textwidth = 100
 
 -- Visually indent wrapped lines
 vim.opt.breakindent = true
