@@ -25,6 +25,7 @@ vim.opt.breakindentopt = { "shift:4" }  -- add 4 spaces on wrapped lines
 -- fix autocomplete navigation
 vim.opt.wildmode = { "longest:full" }
 vim.opt.wildmenu = true
+vim.opt.fileignorecase = false
 vim.keymap.set('c', '<Down>', '<C-n>')
 vim.keymap.set('c', '<Up>', '<C-p>')
 
