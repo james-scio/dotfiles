@@ -36,6 +36,16 @@ if [[ "$PLATFORM" == "linux" ]]; then
         rm -f /tmp/fzf.tar.gz
     fi
 
+    # Install tree-sitter-cli (needed by nvim-treesitter auto_install)
+    if ! command -v tree-sitter &>/dev/null; then
+        echo "Installing tree-sitter-cli..."
+        TS_VERSION="$(curl -fsSL https://api.github.com/repos/tree-sitter/tree-sitter/releases/latest | grep -Po '"tag_name": *"v?\K[^"]*')"
+        curl -fLo /tmp/tree-sitter.gz "https://github.com/tree-sitter/tree-sitter/releases/download/v${TS_VERSION}/tree-sitter-linux-x64.gz"
+        gunzip -f /tmp/tree-sitter.gz
+        chmod +x /tmp/tree-sitter
+        sudo mv /tmp/tree-sitter /usr/local/bin/tree-sitter
+    fi
+
     # Install nvim via appimage if missing (Ubuntu apt version is too old)
     if ! command -v nvim &>/dev/null; then
         echo "Installing nvim..."
@@ -48,6 +58,14 @@ if [[ "$PLATFORM" == "linux" ]]; then
     if [[ "$SHELL" != */zsh ]]; then
         echo "Setting default shell to zsh..."
         sudo usermod -s "$(which zsh)" "$(whoami)"
+    fi
+fi
+
+# 1b. Platform setup (macOS)
+if [[ "$PLATFORM" == "darwin" ]]; then
+    if ! command -v tree-sitter &>/dev/null; then
+        echo "Installing tree-sitter-cli..."
+        brew install tree-sitter
     fi
 fi
 

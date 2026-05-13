@@ -50,12 +50,4 @@ vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
 -- require("ibhagwan/fzf-lua")
 vim.keymap.set('n', '<C-f>', '<cmd>FzfLua files<CR>', { noremap = true, silent = true })
 
--- plugin: nvim-treesitter/nvim-treesitter
-require('nvim-treesitter.configs').setup({
-  ensure_installed = { 'python', 'lua', 'bash', 'json', 'yaml', 'markdown', 'java', 'go' },
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = false, -- avoid double-highlighting
-  },
-})
 
