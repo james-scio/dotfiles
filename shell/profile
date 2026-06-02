@@ -17,3 +17,17 @@ fi
 
 export EDITOR=nvim
 export VISUAL=nvim
+
+# Coder forces GIT_SSH_COMMAND through `coder gitssh`, which authenticates with
+# Coder's own SSH key (not added to GitHub/GitLab). Override it to plain ssh so
+# git uses the forwarded ssh-agent key instead.
+case "${GIT_SSH_COMMAND:-}" in
+    *"coder gitssh"*) export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" ;;
+esac
+
+# Coder's startup appends GIT_COMMITTER_NAME/EMAIL=glean-bot-user to ~/.bashrc,
+# reattributing commits to the bot. Undo that override (sourced after .bashrc
+# above) so commits are committed as the user configured in gitconfig-linux.
+if [ "${GIT_COMMITTER_EMAIL:-}" = "glean-bot-user@glean.com" ]; then
+    unset GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL
+fi

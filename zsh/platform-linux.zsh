@@ -2,6 +2,20 @@ path+=("$HOME/bin")
 path+=("$HOME/.local/bin")
 path+=("$HOME/go/bin")
 
+# Coder forces GIT_SSH_COMMAND through `coder gitssh`, which authenticates with
+# Coder's own SSH key (not added to GitHub/GitLab). Override it to plain ssh so
+# git uses the forwarded ssh-agent key instead.
+case "${GIT_SSH_COMMAND:-}" in
+    *"coder gitssh"*) export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" ;;
+esac
+
+# Coder's startup appends GIT_COMMITTER_NAME/EMAIL=glean-bot-user to ~/.bashrc,
+# reattributing commits to the bot. Undo that override (it leaks into zsh when
+# launched from a bash login shell) so commits use the gitconfig-linux user.
+if [ "${GIT_COMMITTER_EMAIL:-}" = "glean-bot-user@glean.com" ]; then
+    unset GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL
+fi
+
 # LS colors matching Mac LSCOLORS=gxfxbEaEBxxEhEhBaDaCaD
 # Directories: cyan, symlinks: magenta, executables: blue bold
 # Disable green background on sticky/other-writable dirs

@@ -7,6 +7,37 @@ PLATFORM="$(uname -s | tr '[:upper:]' '[:lower:]')"  # darwin or linux
 
 echo "Platform: $PLATFORM"
 
+# 0. Undo Coder's git SSH override.
+# Coder injects GIT_SSH_COMMAND=".../coder gitssh --", which authenticates with
+# Coder's own SSH key (not added to GitHub/GitLab) and fails host-key checks on
+# fresh VMs ("Host key verification failed"). This env var outranks git's
+# core.sshCommand, so it can't be undone from gitconfig. Override it to plain
+# ssh so git uses the forwarded ssh-agent key instead (e.g. for Lazy clones).
+case "${GIT_SSH_COMMAND:-}" in
+    *"coder gitssh"*)
+        export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new"
+        echo "Overrode Coder's GIT_SSH_COMMAND to use the forwarded ssh-agent key"
+        ;;
+esac
+
+# 0b. Undo Coder's bot-committer override for bash.
+# The workspace template appends GIT_COMMITTER_NAME/EMAIL=glean-bot-user to
+# ~/.bashrc (re-added on rebuilds), reattributing commits to the bot. We don't
+# delete those lines (they come back); instead append an unset at the very end
+# of ~/.bashrc so it runs after them, restoring the committer to the gitconfig
+# user. Every interactive/login bash sources .bashrc. Idempotent via marker.
+if [[ "$PLATFORM" == "linux" && -f "$HOME/.bashrc" ]]; then
+    MARKER="# dotfiles: undo Coder bot-committer override"
+    if ! grep -qF "$MARKER" "$HOME/.bashrc"; then
+        {
+            echo ""
+            echo "$MARKER"
+            echo '[ "${GIT_COMMITTER_EMAIL:-}" = "glean-bot-user@glean.com" ] && unset GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL'
+        } >> "$HOME/.bashrc"
+        echo "Appended bot-committer unset to ~/.bashrc"
+    fi
+fi
+
 # 1. Platform setup (Linux only)
 if [[ "$PLATFORM" == "linux" ]]; then
     NEED_APT=false
