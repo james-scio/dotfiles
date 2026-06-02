@@ -29,3 +29,39 @@ export MISE_GITHUB_ATTESTATIONS=0
 if command -v mise &>/dev/null; then
     eval "$(mise activate zsh)"
 fi
+
+# >>> socket-firewall >>>
+# Transparent Socket Firewall wrapping for package managers.
+# Installed by MDM. Do not edit this block manually.
+# Config (API key, custom registries) lives in ~/.sfw.config
+# Bypass: SFW_BYPASS=1 npm install ...
+if command -v sfw >/dev/null 2>&1; then
+  # JavaScript/TypeScript
+  npm()    { if [ -n "${SFW_BYPASS:-}" ]; then command npm "$@"; else command sfw npm "$@"; fi; }
+  npx()    { if [ -n "${SFW_BYPASS:-}" ]; then command npx "$@"; else command sfw npx "$@"; fi; }
+  yarn()   { if [ -n "${SFW_BYPASS:-}" ]; then command yarn "$@"; else command sfw yarn "$@"; fi; }
+  pnpm()   { if [ -n "${SFW_BYPASS:-}" ]; then command pnpm "$@"; else command sfw pnpm "$@"; fi; }
+
+  # Python
+  pip()    { if [ -n "${SFW_BYPASS:-}" ]; then command pip "$@"; else command sfw pip "$@"; fi; }
+  pip3()   { if [ -n "${SFW_BYPASS:-}" ]; then command pip3 "$@"; else command sfw pip3 "$@"; fi; }
+  uv()     { if [ -n "${SFW_BYPASS:-}" ]; then command uv "$@"; else command sfw uv "$@"; fi; }
+
+  # Rust
+  cargo()  { if [ -n "${SFW_BYPASS:-}" ]; then command cargo "$@"; else command sfw cargo "$@"; fi; }
+
+  # Go
+  go()     { if [ -n "${SFW_BYPASS:-}" ]; then command go "$@"; else command sfw go "$@"; fi; }
+
+  # Java/Scala/Kotlin
+  mvn()    { if [ -n "${SFW_BYPASS:-}" ]; then command mvn "$@"; else command sfw mvn "$@"; fi; }
+  gradle() { if [ -n "${SFW_BYPASS:-}" ]; then command gradle "$@"; else command sfw gradle "$@"; fi; }
+
+  # Ruby
+  gem()    { if [ -n "${SFW_BYPASS:-}" ]; then command gem "$@"; else command sfw gem "$@"; fi; }
+  bundle() { if [ -n "${SFW_BYPASS:-}" ]; then command bundle "$@"; else command sfw bundle "$@"; fi; }
+
+  # .NET
+  dotnet() { if [ -n "${SFW_BYPASS:-}" ]; then command dotnet "$@"; else command sfw dotnet "$@"; fi; }
+fi
+# <<< socket-firewall <<<
