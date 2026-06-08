@@ -16,6 +16,18 @@ if [ "${GIT_COMMITTER_EMAIL:-}" = "glean-bot-user@glean.com" ]; then
     unset GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL
 fi
 
+# Keep a stable ssh-agent socket across Coder SSH reconnects. Each `coder ssh`
+# creates a new /tmp/auth-agent*/listener.sock and deletes the old one, so a
+# reattached tmux pane (or the bazel daemon) ends up pointed at a dead socket →
+# "Permission denied (publickey)" on every git-over-SSH op. A fresh login (which
+# has the live forwarded socket) repoints ~/.ssh/agent.sock; all shells then use
+# that stable path, so existing panes auto-heal on the next login.
+if [[ -S "${SSH_AUTH_SOCK:-}" && "$SSH_AUTH_SOCK" != "$HOME/.ssh/agent.sock" ]]; then
+    mkdir -p "$HOME/.ssh"
+    ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/agent.sock"
+fi
+[[ -S "$HOME/.ssh/agent.sock" ]] && export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
+
 # LS colors matching Mac LSCOLORS=gxfxbEaEBxxEhEhBaDaCaD
 # Directories: cyan, symlinks: magenta, executables: blue bold
 # Disable green background on sticky/other-writable dirs
