@@ -44,6 +44,10 @@ Vi mode, mouse support, 256-color with true color, Alt-arrow pane navigation, Ct
 
 Dark+ colorscheme with transparent background, treesitter for Python/Lua/Bash/JSON/YAML/Markdown/Java/Go, fzf-lua file finder (`Ctrl-F`), OSC 52 clipboard over SSH, 2-space indent, smart indent, visual break indent, mouse disabled.
 
+### `alacritty/` - Alacritty terminal
+
+- **alacritty.toml** - Input Mono font, `option_as_alt`, disables Cmd-Q/Cmd-W quit/close bindings
+
 ### `git/` - Git configuration
 
 - **gitconfig** - GPG commit signing, histogram diff, git-town aliases (`hack`, `sync`, `ship`, `propose`, etc.), `bb` (better branch list), `pushf` (force-with-lease), rerere, auto-prune fetch, SSH URL rewriting, Bazel lockfile merge driver

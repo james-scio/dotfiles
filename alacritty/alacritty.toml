@@ -1,0 +1,24 @@
+[font]
+size = 13
+
+[font.bold]
+family = "Input Mono"
+
+[font.italic]
+family = "Input Mono"
+
+[font.normal]
+family = "Input Mono"
+
+[[keyboard.bindings]]
+action = "None"
+key = "Q"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "None"
+key = "W"
+mods = "Command"
+
+[window]
+option_as_alt = "Both"
