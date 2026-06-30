@@ -1,5 +1,10 @@
 # Identity + commit signing live in the top-level git/gitconfig (see the
 # comment there). Keep only platform-specific settings below.
+[url "git@github.com:"]
+	# On the Mac we push over SSH (local keys are loaded), so rewrite GitHub
+	# HTTPS URLs to SSH. On Coder this rewrite is intentionally absent so git
+	# uses HTTPS + the GitHub App credential helper instead (see gitconfig-linux).
+	insteadOf = https://github.com/
 [merge]
 	tool = meld
 [mergetool "meld"]

@@ -39,8 +39,6 @@
 	fpush = push
 	bb = !better-git-branch.sh
 	pushf = push --force-with-lease
-[url "git@github.com:"]
-	insteadOf = https://github.com/
 [core]
 	editor = nvim
 [pull]
