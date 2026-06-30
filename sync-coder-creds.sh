@@ -11,7 +11,7 @@ CREDS_MARKER="$HOME/.cache/coder-creds-changed"
 SYNCED_DIR="$HOME/.cache/coder-creds-synced"
 GCLOUD_DIR="$HOME/.config/gcloud"
 SYNC_SCRIPT="$HOME/workspace/deploy/coder/coder-sync-creds.sh"
-SCIO_SYNC_SCRIPT="$HOME/workspace/scio/coder-sync-creds.sh"
+SCIO_SYNC_SCRIPT="$HOME/workspace/scio/coder/coder-sync-creds.sh"
 
 # Update the creds-changed marker if any cred file is newer than it
 for f in "$GCLOUD_DIR"/application_default_credentials.json \
