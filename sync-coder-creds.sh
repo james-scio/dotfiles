@@ -11,6 +11,7 @@ CREDS_MARKER="$HOME/.cache/coder-creds-changed"
 SYNCED_DIR="$HOME/.cache/coder-creds-synced"
 GCLOUD_DIR="$HOME/.config/gcloud"
 SYNC_SCRIPT="$HOME/workspace/deploy/coder/coder-sync-creds.sh"
+SCIO_SYNC_SCRIPT="$HOME/workspace/scio/coder-sync-creds.sh"
 
 # Update the creds-changed marker if any cred file is newer than it
 for f in "$GCLOUD_DIR"/application_default_credentials.json \
@@ -55,7 +56,12 @@ echo "$(date): syncing creds to Coder workspaces: ${needs_sync[*]}"
 
 for name in "${needs_sync[@]}"; do
     echo "Syncing creds to $name ..."
-    if "$SYNC_SCRIPT" "$name" --skip-gpg; then
+    if [[ "$name" == "creds1" ]]; then
+        sync_cmd=("$SCIO_SYNC_SCRIPT" "$name" --skip-gpg --sa)
+    else
+        sync_cmd=("$SYNC_SCRIPT" "$name" --skip-gpg)
+    fi
+    if "${sync_cmd[@]}"; then
         echo "Done: $name"
         touch "$SYNCED_DIR/$name"
     else

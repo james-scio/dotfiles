@@ -1,12 +1,6 @@
-[user]
-	name = James Simonsen
-	email = james@glean.com
-	signingkey = 9662AE7916EC3B3E
-[gpg]
-	format = openpgp
-[commit]
-	# Requires the private key imported once per workspace via
-	# deploy/coder/coder-sync-creds.sh (it prompts for the GPG passphrase).
-	gpgsign = true
+# Identity + commit signing live in the top-level git/gitconfig (see the
+# comment there). The GPG private key (9662AE7916EC3B3E) must be imported once
+# per workspace via deploy/coder/coder-sync-creds.sh. Keep only
+# platform-specific settings below.
 [merge]
 	tool = vimdiff
