@@ -65,3 +65,17 @@ if command -v sfw >/dev/null 2>&1; then
   dotnet() { if [ -n "${SFW_BYPASS:-}" ]; then command dotnet "$@"; else command sfw dotnet "$@"; fi; }
 fi
 # <<< socket-firewall <<<
+
+# gh CLI auth on Coder workspaces. My laptop's ~/.config/gh/hosts.yml is pushed
+# to the workspace by dotfiles/sync-coder-creds.sh, and gh reads it natively.
+# The Coder workspace startup appends a block (after this file) that sets
+# GH_TOKEN to a coder-external-auth *URL* when that integration isn't authorized,
+# which shadows hosts.yml and breaks gh. Drop such a bogus GH_TOKEN from a
+# one-shot precmd hook (runs after all startup files) so gh uses hosts.yml.
+# No-op off Coder / when GH_TOKEN is a real token.
+autoload -Uz add-zsh-hook
+_fix_gh_token() {
+  case "${GH_TOKEN:-}" in http*) unset GH_TOKEN ;; esac
+  add-zsh-hook -d precmd _fix_gh_token
+}
+add-zsh-hook precmd _fix_gh_token
