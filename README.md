@@ -78,14 +78,17 @@ Helper scripts for syncing dotfiles and credentials to remote [Coder](https://co
 
 ### macOS Launch Agents (`launchd/`)
 
-Two scripts run automatically via launchd on macOS. The plist files are in `launchd/` and are symlinked into `~/Library/LaunchAgents/` by `install.sh`.
+Three scripts run automatically via launchd on macOS. The plist files are in `launchd/` and are symlinked into `~/Library/LaunchAgents/` by `install.sh`.
 
 | Plist | Script | Interval |
 |---|---|---|
 | `com.dotfiles.sync-coder-creds.plist` | `sync-coder-creds.sh` | Every 5 minutes |
 | `com.dotfiles.pull-claude-sessions.plist` | `pull-claude-sessions.sh` | Every hour |
+| `com.dotfiles.cleanup-nonbazel.plist` | `macos/cleanup-nonbazel.sh` | Daily at 03:30 |
 
-Logs go to `/tmp/sync-coder-creds.log` and `/tmp/pull-claude-sessions.log`.
+The cleanup agent prunes selected rebuildable package/development caches, removes older versioned JetBrains caches while retaining the newest per product, and removes explicitly identified disposable backups. It intentionally excludes Bazel, Docker/Colima VM data, Trash, source trees, active environments, and current IDE support data.
+
+Logs go to `/tmp/sync-coder-creds.log`, `/tmp/pull-claude-sessions.log`, and `/tmp/dotfiles-clean-nonbazel.log`.
 
 To check status or stop manually:
 
@@ -93,6 +96,7 @@ To check status or stop manually:
 launchctl list | grep com.dotfiles
 launchctl bootout gui/$(id -u)/com.dotfiles.sync-coder-creds
 launchctl bootout gui/$(id -u)/com.dotfiles.pull-claude-sessions
+launchctl bootout gui/$(id -u)/com.dotfiles.cleanup-nonbazel
 ```
 
 ## Adding a New App
