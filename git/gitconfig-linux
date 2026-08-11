@@ -3,13 +3,17 @@
 # per workspace via deploy/coder/coder-sync-creds.sh. Keep only
 # platform-specific settings below.
 [url "https://github.com/"]
-	# Force GitHub traffic over HTTPS so it authenticates via the GitHub App
-	# credential helper (/usr/local/bin/glean-github-cred-helper, configured in
-	# /etc/gitconfig). Coder injects GIT_SSH_COMMAND="coder gitssh", which
+	# Force GitHub traffic over HTTPS so it authenticates via the GitHub CLI
+	# credential helper. Coder injects GIT_SSH_COMMAND="coder gitssh", which
 	# authenticates with Coder's own key (not on GitHub), so any SSH-form remote
-	# fails with "Permission denied (publickey)". Rewriting SSH -> HTTPS routes
-	# pushes/fetches through the App installation token instead.
+	# fails with "Permission denied (publickey)". Rewriting SSH -> HTTPS lets
+	# Git use the personal GitHub credentials managed by `gh`.
 	insteadOf = git@github.com:
 	insteadOf = ssh://git@github.com/
+[credential "https://github.com"]
+	# Clear Coder's system-level GitHub App helper before installing the
+	# personal GitHub CLI helper below.
+	helper =
+	helper = !gh auth git-credential
 [merge]
 	tool = vimdiff

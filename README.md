@@ -72,7 +72,7 @@ Helper scripts for syncing dotfiles and credentials to remote [Coder](https://co
 
 | Script | What it does |
 |---|---|
-| `push-to-coder.sh <workspace>` | Rsync dotfiles to a Coder workspace and run `install.sh` remotely |
+| `push-to-coder.sh <workspace>` | Bootstrap/preserve a Git repository, rsync dotfiles to a Coder workspace, and run `install.sh` remotely |
 | `sync-coder-creds.sh` | Sync gcloud credentials to all running Coder workspaces (tracks per-workspace sync state, skips already-synced) |
 | `pull-claude-sessions.sh` | Pull Claude Code sessions from running Coder workspaces into local `~/.claude/projects/`, remapping remote paths to local equivalents |
 
