@@ -11,23 +11,33 @@ CREDS_MARKER="$HOME/.cache/coder-creds-changed"
 SYNCED_DIR="$HOME/.cache/coder-creds-synced"
 GCLOUD_DIR="$HOME/.config/gcloud"
 GH_HOSTS="$HOME/.config/gh/hosts.yml"
+GH_TOKEN_FINGERPRINT="$HOME/.cache/coder-gh-token-fingerprint"
 SYNC_SCRIPT="$HOME/workspace/deploy/coder/coder-sync-creds.sh"
 SCIO_SYNC_SCRIPT="$HOME/workspace/scio/coder/coder-sync-creds.sh"
 
-# Push our laptop's `gh` login to a workspace. gh reads ~/.config/gh/hosts.yml
-# natively, so copying it verbatim reproduces the same authenticated user
-# (no browser/coder external-auth dance). zsh/zshrc drops the coder-external-auth
-# GH_TOKEN the workspace template injects, so gh falls back to this file.
+# Push the laptop's Keychain-backed `gh` login to a workspace. gh may keep the
+# token in macOS Keychain and leave only account metadata in hosts.yml, so do
+# not copy hosts.yml verbatim. Generate a minimal hosts.yml from `gh auth token`.
 push_gh_auth() {
     local name="$1"
-    [[ -f "$GH_HOSTS" ]] || return 0
-    # Pipe over ssh to an absolute ~ path: rsync/scp resolve relative paths
-    # against the login CWD (zshrc auto-cds to the repo), and SFTP-based scp
-    # silently drops files through coder's proxy. umask 077 -> mode 600.
-    ssh "coder.$name" 'umask 077; mkdir -p ~/.config/gh && cat > ~/.config/gh/hosts.yml' < "$GH_HOSTS"
+    local token user
+    command -v gh >/dev/null 2>&1 || return 0
+    token="$(gh auth token --hostname github.com 2>/dev/null)" || return 0
+    [[ -n "$token" ]] || return 0
+    user="$(gh api user --hostname github.com --jq .login 2>/dev/null)" || return 0
+    [[ -n "$user" ]] || return 0
+
+    {
+        printf 'github.com:\n'
+        printf '    oauth_token: %s\n' "$token"
+        printf '    user: %s\n' "$user"
+        printf '    git_protocol: https\n'
+    } | ssh "coder.$name" 'umask 077; mkdir -p ~/.config/gh; tmp=$(mktemp ~/.config/gh/hosts.yml.XXXXXX); cat > "$tmp"; chmod 600 "$tmp"; mv "$tmp" ~/.config/gh/hosts.yml'
 }
 
-# Update the creds-changed marker if any cred file is newer than it
+# Update the creds-changed marker if any cred file is newer than it. The token
+# fingerprint catches Keychain-backed gh refreshes even when hosts.yml itself
+# contains no token and its mtime does not change.
 for f in "$GCLOUD_DIR"/application_default_credentials.json \
          "$GCLOUD_DIR"/credentials.db \
          "$GH_HOSTS"; do
@@ -39,6 +49,19 @@ for f in "$GCLOUD_DIR"/application_default_credentials.json \
         fi
     fi
 done
+
+if command -v gh >/dev/null 2>&1; then
+    gh_token="$(gh auth token --hostname github.com 2>/dev/null || true)"
+    if [[ -n "$gh_token" ]]; then
+        gh_fingerprint="$(printf '%s' "$gh_token" | shasum -a 256 | awk '{print $1}')"
+        old_fingerprint="$(cat "$GH_TOKEN_FINGERPRINT" 2>/dev/null || true)"
+        if [[ "$gh_fingerprint" != "$old_fingerprint" ]]; then
+            mkdir -p "$(dirname "$GH_TOKEN_FINGERPRINT")"
+            printf '%s\n' "$gh_fingerprint" > "$GH_TOKEN_FINGERPRINT"
+            touch "$CREDS_MARKER"
+        fi
+    fi
+fi
 
 # If creds have never been seen, nothing to sync
 if [[ ! -f "$CREDS_MARKER" ]]; then
