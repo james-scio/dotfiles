@@ -2,7 +2,7 @@ return {
   {"nvim-treesitter/nvim-treesitter", branch = 'main', lazy = false, build = ":TSUpdate",
     config = function()
       local ts = require('nvim-treesitter')
-      ts.install({ 'python', 'lua', 'bash', 'json', 'yaml', 'markdown', 'java', 'go' }, { summary = false }):wait(30000)
+      ts.install({ 'python', 'lua', 'bash', 'json', 'yaml', 'markdown', 'java', 'go', 'gitcommit' }, { summary = false }):wait(30000)
 
       vim.api.nvim_create_autocmd('FileType', {
         group = vim.api.nvim_create_augroup('treesitter-auto', { clear = true }),

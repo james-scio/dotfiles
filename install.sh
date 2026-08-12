@@ -185,6 +185,23 @@ if command -v nvim &>/dev/null; then
     else
         echo "Nvim plugin install failed (run again after adding SSH key)."
     fi
+
+    # Preinstall the parsers used by the config before the first interactive
+    # nvim session. Running with -u NONE avoids the startup FileType
+    # autocmd and gives first-time downloads/compiles five minutes. This is
+    # intentionally independent of Lazy! install: its normal config can time
+    # out while installing parsers on a new workspace.
+    tree_sitter_languages=(python lua bash json yaml markdown java go gitcommit)
+    tree_sitter_lua_list="$(printf "'%s', " "${tree_sitter_languages[@]}")"
+    echo "Preinstalling nvim-treesitter parsers..."
+    if nvim --headless -u NONE \
+        --cmd "lua vim.opt.rtp:prepend(vim.fn.stdpath('data') .. '/lazy/nvim-treesitter')" \
+        -c "lua require('nvim-treesitter').install({ ${tree_sitter_lua_list} }, { summary = false }):wait(300000)" \
+        -c 'qa' 2>&1; then
+        echo "Nvim-treesitter parsers installed."
+    else
+        echo "Nvim-treesitter parser preinstall failed (run install.sh again when network/authentication is available)."
+    fi
 fi
 
 echo ""
