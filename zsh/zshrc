@@ -27,6 +27,9 @@ export MISE_GITHUB_ATTESTATIONS=0
 
 # mise: automatic dev tool version management
 if command -v mise &>/dev/null; then
+    # Source Glean-managed shell config (added by scio install scripts)
+    [[ -f "$HOME/.zshrc.glean" ]] && source "$HOME/.zshrc.glean"
+
     eval "$(mise activate zsh)"
 fi
 
