@@ -19,15 +19,6 @@ alias ll='ls -l -G -L'
 # Gcloud
 source '/usr/local/share/google-cloud-sdk/path.zsh.inc'
 source '/usr/local/share/google-cloud-sdk/completion.zsh.inc'
-export CLOUDSDK_PYTHON_SITEPACKAGES=1
-export CLOUDSDK_PYTHON=/Users/james/workspace/scio/python_scio/scio_env/bin/python
-export CLOUDSDK_GSUTIL_PYTHON=/Users/james/workspace/scio/python_scio/scio_env/bin/python
-export CLOUDSDK_BQ_PYTHON=/Users/james/workspace/scio/python_scio/scio_env/bin/python
-
-# Scio python
-source $HOME/workspace/scio/python_scio/scio_env/bin/activate
-export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-alias scio=/Users/james/workspace/scio/scio
 
 # Clang
 export CPLUS_INCLUDE_PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
