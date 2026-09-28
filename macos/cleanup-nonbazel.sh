@@ -92,6 +92,30 @@ run_if_available brew cleanup
 run_if_available pip3 cache purge
 run_if_available npm cache clean --force
 
+# Keep only the pnpm store format used by the installed pnpm. Older store
+# formats are versioned directories (vN) under this root. Skip cleanup if
+# pnpm cannot report its active store, and retain any non-versioned entries.
+pnpm_store_root="$HOME_DIR/Library/pnpm/store"
+if command -v pnpm >/dev/null 2>&1; then
+    active_pnpm_store="$(pnpm store path --store-dir="$pnpm_store_root" 2>/dev/null || true)"
+    active_pnpm_store="${active_pnpm_store%/}"
+    active_pnpm_store_version="${active_pnpm_store##*/}"
+
+    if [[ "$active_pnpm_store" == "$pnpm_store_root/"* && "$active_pnpm_store_version" =~ ^v[0-9]+$ ]]; then
+        for candidate in "$pnpm_store_root"/v*; do
+            [[ -d "$candidate" ]] || continue
+            candidate_name="${candidate##*/}"
+            [[ "$candidate_name" =~ ^v[0-9]+$ ]] || continue
+            [[ "$candidate" == "$active_pnpm_store" ]] && continue
+            remove_path "$candidate"
+        done
+    else
+        log "Skipping pnpm store cleanup: could not identify the active store."
+    fi
+else
+    log "Skipping pnpm store cleanup: pnpm is unavailable."
+fi
+
 # uv and pre-commit may only be installed inside a project environment. Use
 # their native pruning commands when available, otherwise remove their known
 # cache roots directly.
@@ -171,5 +195,6 @@ for backup in "$jetbrains_support_root"/*-backup; do
     remove_path "$backup"
 done
 remove_path "$HOME_DIR/workspace/scio/python_scio/scio_env_backup"
+remove_path "$HOME_DIR/workspace/deploy/python_scio/scio_env_backup"
 
 log "Cleanup complete."
