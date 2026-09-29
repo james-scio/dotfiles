@@ -2,8 +2,9 @@ return {
   {"nvim-treesitter/nvim-treesitter", branch = 'main', lazy = false, build = ":TSUpdate",
     config = function()
       local ts = require('nvim-treesitter')
-      ts.install({ 'python', 'lua', 'bash', 'json', 'yaml', 'markdown', 'java', 'go', 'gitcommit' }, { summary = false }):wait(30000)
-
+      -- Parser preinstallation is handled by install.sh. Do not block plugin
+      -- configuration on downloads here; fresh workspaces can take longer than
+      -- Lazy's startup window to compile all parsers.
       vim.api.nvim_create_autocmd('FileType', {
         group = vim.api.nvim_create_augroup('treesitter-auto', { clear = true }),
         pattern = '*',
