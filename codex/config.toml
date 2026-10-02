@@ -1,0 +1,4 @@
+# Managed by dotfiles/install.sh; keep the workspace sandbox enabled.
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+sandbox_mode = "workspace-write"

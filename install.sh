@@ -164,7 +164,11 @@ else:
     print(f"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS already set in {path}")
 EOF
 
-# 6. Install launchd agents (macOS only)
+# 6. Merge safe Codex auto-review defaults into ~/.codex/config.toml.
+# Keep the user's other settings; replace only these root-level keys.
+python3 "$DOTFILES/codex/install-defaults.py" "$DOTFILES/codex/config.toml"
+
+# 7. Install launchd agents (macOS only)
 if [[ "$PLATFORM" == "darwin" ]]; then
     for plist in "$DOTFILES"/launchd/*.plist; do
         name="$(basename "$plist")"
