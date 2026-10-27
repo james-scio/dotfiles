@@ -1,6 +1,6 @@
 alias bazel='/Users/james/bin/mybazel'
 
-export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 
 path+=('/Users/james/bin')
 path+=('/Users/james/.local/bin')
