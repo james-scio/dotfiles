@@ -1,9 +1,13 @@
 require("config.lazy")
+require("config.autocmds")
 
 if os.getenv("SSH_TTY") then
   vim.g.clipboard = 'osc52'
 end
 vim.opt.mouse = ""
+
+-- Find Ctags indexes in the current file's directory and its ancestors.
+vim.opt.tags = { "./tags;", "tags" }
 
 vim.g.did_indent_on = true   -- stops filetype indent plugins
 
