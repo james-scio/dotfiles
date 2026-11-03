@@ -20,8 +20,9 @@ Existing config files are backed up to `~/.dotfiles-backup/` before symlinking.
 3. Creates symlinks for all config files (see [Structure](#structure))
 4. Merges `editorMode=vim` into `~/.claude.json`
 5. Enables Claude Code agent teams in `~/.claude/settings.json`
-6. **macOS only:** installs launchd agents for Coder credential sync and Claude session pull
-7. Installs neovim plugins via Lazy
+6. Merges managed Codex defaults into `~/.codex/config.toml`, including Vim-mode input for the TUI
+7. **macOS only:** installs launchd agents for Coder credential sync and Claude session pull
+8. Installs neovim plugins via Lazy
 
 ## Structure
 
@@ -72,7 +73,7 @@ Helper scripts for syncing dotfiles and credentials to remote [Coder](https://co
 
 | Script | What it does |
 |---|---|
-| `push-to-coder.sh <workspace>` | Bootstrap/preserve a Git repository, rsync dotfiles to a Coder workspace, and run `install.sh` remotely |
+| `push-to-coder.sh <workspace>` | Bootstrap/preserve a Git repository, rsync dotfiles to a Coder workspace, and run `install.sh` remotely so managed Codex defaults (including Vim input mode) are applied |
 | `sync-coder-creds.sh` | Sync gcloud credentials to all running Coder workspaces (tracks per-workspace sync state, skips already-synced) |
 | `pull-claude-sessions.sh` | Pull Claude Code sessions from running Coder workspaces into local `~/.claude/projects/`, remapping remote paths to local equivalents |
 

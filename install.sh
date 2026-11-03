@@ -164,8 +164,8 @@ else:
     print(f"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS already set in {path}")
 EOF
 
-# 6. Merge safe Codex auto-review defaults into ~/.codex/config.toml.
-# Keep the user's other settings; replace only these root-level keys.
+# 6. Merge dotfiles-managed Codex defaults into ~/.codex/config.toml.
+# Keep the user's other settings; replace only managed approval and TUI keys.
 python3 "$DOTFILES/codex/install-defaults.py" "$DOTFILES/codex/config.toml"
 
 # 7. Install launchd agents (macOS only)
