@@ -24,19 +24,45 @@ ORIGIN_URL="$(git -C "$DOTFILES" remote get-url origin)"
 printf -v ORIGIN_ARG '%q' "$ORIGIN_URL"
 
 echo "Checking remote dotfiles repository ..."
-REMOTE_REPO_STATE="$(ssh "$SSH_HOST" "bash -s -- $ORIGIN_ARG" <<'REMOTE'
+REMOTE_STATE_FILE="$(mktemp)"
+trap 'rm -f "$REMOTE_STATE_FILE"' EXIT
+ssh "$SSH_HOST" "bash -s -- $ORIGIN_ARG" >"$REMOTE_STATE_FILE" <<'REMOTE'
 set -euo pipefail
 
 origin="$1"
 dotfiles="$HOME/.dotfiles"
+
+normalize_origin() {
+    local value="$1"
+    case "$value" in
+        git@*:* )
+            value="${value#git@}"
+            value="${value%%:*}/${value#*:}"
+            ;;
+        ssh://*|https://*|http://*|git://*)
+            value="${value#*://}"
+            value="${value#*@}"
+            ;;
+    esac
+    value="${value%/}"
+    value="${value%.git}"
+    NORMALIZED_ORIGIN="$value"
+}
 
 if git -C "$dotfiles" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     existing_origin="$(git -C "$dotfiles" remote get-url origin 2>/dev/null || true)"
     if [[ -z "$existing_origin" ]]; then
         git -C "$dotfiles" remote add origin "$origin"
     elif [[ "$existing_origin" != "$origin" ]]; then
-        echo "Error: $dotfiles origin is $existing_origin, expected $origin" >&2
-        exit 1
+        normalize_origin "$existing_origin"
+        existing_origin_normalized="$NORMALIZED_ORIGIN"
+        normalize_origin "$origin"
+        origin_normalized="$NORMALIZED_ORIGIN"
+        if [[ "$existing_origin_normalized" != "$origin_normalized" ]]; then
+            echo "Error: $dotfiles origin is $existing_origin, expected $origin" >&2
+            exit 1
+        fi
+        echo "Remote origin uses an equivalent URL form; preserving $existing_origin"
     fi
     echo '__DOTFILES_REPO_STATE__:preserve'
 else
@@ -47,7 +73,9 @@ else
     echo '__DOTFILES_REPO_STATE__:bootstrap'
 fi
 REMOTE
-)"
+REMOTE_REPO_STATE="$(cat "$REMOTE_STATE_FILE")"
+rm -f "$REMOTE_STATE_FILE"
+trap - EXIT
 
 rsync_args=(-av --delete --no-links --exclude='gitconfig-local')
 case "$REMOTE_REPO_STATE" in
