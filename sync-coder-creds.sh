@@ -4,8 +4,9 @@ exec > >(while IFS= read -r line; do printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%
 export PATH="/opt/homebrew/bin:$PATH"
 source "$(dirname "$0")/shell/launchd-notify.sh" && launchd_notify_trap
 
-# Sync gcloud/GPG credentials to all running Coder workspaces.
+# Sync gcloud/GPG credentials to running Coder workspaces, except those listed below.
 # Tracks per-workspace sync state so paused VMs get synced when they come online.
+GCP_SYNC_EXCLUDED_WORKSPACES=("rsearch1")
 
 CREDS_MARKER="$HOME/.cache/coder-creds-changed"
 SYNCED_DIR="$HOME/.cache/coder-creds-synced"
@@ -93,17 +94,22 @@ fi
 echo "$(date): syncing creds to Coder workspaces: ${needs_sync[*]}"
 
 for name in "${needs_sync[@]}"; do
-    echo "Syncing creds to $name ..."
-    if [[ "$name" == "creds1" ]]; then
-        sync_cmd=("$SCIO_SYNC_SCRIPT" "$name" --skip-gpg --sa)
+    if [[ " ${GCP_SYNC_EXCLUDED_WORKSPACES[*]} " == *" $name "* ]]; then
+        echo "Skipping GCP/GPG credential sync to excluded workspace $name"
     else
-        sync_cmd=("$SYNC_SCRIPT" "$name" --skip-gpg)
-    fi
-    if "${sync_cmd[@]}"; then
-        push_gh_auth "$name" && echo "  gh auth synced" || echo "  gh auth sync failed (non-fatal)"
+        echo "Syncing creds to $name ..."
+        if [[ "$name" == "creds1" ]]; then
+            sync_cmd=("$SCIO_SYNC_SCRIPT" "$name" --skip-gpg --sa)
+        else
+            sync_cmd=("$SYNC_SCRIPT" "$name" --skip-gpg)
+        fi
+        if ! "${sync_cmd[@]}"; then
+            echo "Failed: $name"
+            continue
+        fi
         echo "Done: $name"
-        touch "$SYNCED_DIR/$name"
-    else
-        echo "Failed: $name"
     fi
+
+    push_gh_auth "$name" && echo "  gh auth synced" || echo "  gh auth sync failed (non-fatal)"
+    touch "$SYNCED_DIR/$name"
 done
