@@ -4,7 +4,7 @@ set -euo pipefail
 if [[ $# -lt 1 ]]; then
     echo "Usage: push-to-coder.sh <workspace>"
     echo ""
-    echo "Copies dotfiles to a Coder workspace and runs install.sh remotely, including Codex defaults such as Vim input mode."
+    echo "Copies dotfiles to a Coder workspace and runs install.sh remotely, including the narrow Scio fetch filter and Codex defaults such as Vim input mode."
     echo ""
     echo "Available workspaces:"
     coder list -o json 2>/dev/null | jq -r '.[].name' 2>/dev/null || coder list
@@ -99,7 +99,7 @@ esac
 echo "Syncing dotfiles to $SSH_HOST:~/.dotfiles/ ..."
 rsync "${rsync_args[@]}" "$DOTFILES/" "$SSH_HOST:~/.dotfiles/"
 
-echo "Running install.sh on $SSH_HOST (including Codex defaults such as Vim input mode) ..."
+echo "Running install.sh on $SSH_HOST (including the Scio fetch filter and Codex defaults) ..."
 ssh "$SSH_HOST" '~/.dotfiles/install.sh'
 
 echo ""

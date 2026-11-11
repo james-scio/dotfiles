@@ -128,6 +128,11 @@ link "$HOME/.editrc"               "$DOTFILES/readline/editrc"
 link "$HOME/.zlogin"               "$DOTFILES/zsh/zlogin"
 link "$HOME/.profile"              "$DOTFILES/shell/profile"
 
+# Match the Mac's repository-local Scio fetch filter on Linux/Coder too.
+# push-to-coder.sh runs this installer after syncing the helper. No fetches,
+# branch deletions, or changes to unrelated repositories happen here.
+python3 "$DOTFILES/git/configure-fetch.py"
+
 # 4. Configure ~/.claude.json (Claude Code manages this file directly, so we merge rather than symlink)
 python3 - <<'EOF'
 import json, os

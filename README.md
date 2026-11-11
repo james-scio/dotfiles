@@ -17,7 +17,7 @@ Existing config files are backed up to `~/.dotfiles-backup/` before symlinking.
 
 1. **Linux only:** installs zsh, tmux, fzf, and neovim if missing; sets zsh as default shell
 2. Links platform-specific git config (`gitconfig-darwin` or `gitconfig-linux`)
-3. Creates symlinks for all config files (see [Structure](#structure))
+3. Creates symlinks for all config files (see [Structure](#structure)) and configures existing Scio clones/worktrees to fetch only `master`, `james-*`, and `release-*`, matching the Mac
 4. Merges `editorMode=vim` into `~/.claude.json`
 5. Enables Claude Code agent teams in `~/.claude/settings.json`
 6. Merges managed Codex defaults into `~/.codex/config.toml`, including Vim-mode input for the TUI
@@ -54,6 +54,7 @@ Dark+ colorscheme with transparent background, treesitter for Python/Lua/Bash/JS
 - **gitconfig** - GPG commit signing, histogram diff, git-town aliases (`hack`, `sync`, `ship`, `propose`, etc.), `bb` (better branch list), `pushf` (force-with-lease), rerere, auto-prune fetch, SSH URL rewriting, Bazel lockfile merge driver
 - **gitconfig-darwin** - Meld merge tool, git-maintenance repos, GitButler signing
 - **gitconfig-linux** - vimdiff merge tool
+- **configure-fetch.py** - Idempotent, repository-local Scio fetch filter on both platforms; checks the home directory, `~/workspace`, and standard Coder roots (including `/home/workspace`), plus their immediate children; skips unrelated origins and deduplicates worktrees. Does not fetch or delete existing refs. Run `python3 ~/.dotfiles/git/configure-fetch.py /path/to/scio` for a clone outside these roots, or rerun `install.sh` after cloning.
 - **ignore** - Global gitignore
 
 ### `readline/` - Line editing
@@ -73,7 +74,7 @@ Helper scripts for syncing dotfiles and credentials to remote [Coder](https://co
 
 | Script | What it does |
 |---|---|
-| `push-to-coder.sh <workspace>` | Bootstrap/preserve a Git repository, rsync dotfiles to a Coder workspace, and run `install.sh` remotely so managed Codex defaults (including Vim input mode) are applied |
+| `push-to-coder.sh <workspace>` | Bootstrap/preserve a Git repository, rsync dotfiles to a Coder workspace, and run `install.sh` remotely so the narrow Scio fetch filter and managed Codex defaults (including Vim input mode) are applied |
 | `sync-coder-creds.sh` | Sync gcloud credentials to running Coder workspaces except `rsearch1` (tracks per-workspace sync state, skips already-synced) |
 | `pull-claude-sessions.sh` | Pull Claude Code sessions from running Coder workspaces into local `~/.claude/projects/`, remapping remote paths to local equivalents |
 
